@@ -1,0 +1,84 @@
+{
+  "insertId": "32plhxf12b64z",
+  "jsonPayload": {
+    "metadata": {
+      "serviceName": "DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub",
+      "correlationId": "d44d94c0-5ca1-4b0a-86fa-58848aa76d85",
+      "proxy": "logging",
+      "node": "2",
+      "receiverIds": "",
+      "senderId": "",
+      "httpMethod": "POST",
+      "totalResponseTimeInMS": 427,
+      "stopTimeInMS": 1767732546128,
+      "messageId": "",
+      "org": "aritzia-lp-sis-qa-3ex2ei2o",
+      "appName": "cpi-logcollector",
+      "logLabel": "sap-sis",
+      "startTimeInMS": 1767732545701,
+      "statusReason": "COMPLETED",
+      "severity": "info",
+      "contentType": "application/json",
+      "apiProduct": "cpi-logcollector-v1",
+      "version": "9",
+      "system": "aritzia-lp-sis-qa-3ex2ei2o.it-cpi017-rt.cfapps.us30.hana.ondemand.com"
+    },
+    "data": {
+      "source": "SAP_SIS_QA",
+      "event": {
+        "LogLevel": "ERROR",
+        "StartTimeMillis": 1767732545701,
+        "OriginComponentName": "CPI_aritzia-lp-sis-qa-3ex2ei2o",
+        "LogLevelExternal": "INFO",
+        "TransmissionLagMillis": 110,
+        "IntegrationFlowId": "DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub",
+        "TransactionId": "bb321a5d5cae4576b9bb2ec4c4ad4c1f",
+        "DurationMillis": 427,
+        "LogSentAtMillis": 1767732546238,
+        "StopTime": "2026-01-06 20:49:06.128",
+        "CorrelationId": "AGlddUHAPpkPfySpZ6YzGemPjZ38",
+        "LogEventId": "A8kf2AVgqhluU_7m4lZ8HQ",
+        "Node": "2",
+        "LocalComponentName": "CPI_aritzia-lp-sis-qa-3ex2ei2o",
+        "LogEventType": "Run",
+        "StartTime": "2026-01-06 20:49:05.701",
+        "ReceiverIds": [],
+        "PreviousComponentName": "CPI_aritzia-lp-sis-qa-3ex2ei2o",
+        "MessageGuid": "AGlddUHkY40Onk76DSpFR7lKp0ma",
+        "RunId": "AGlddUFpdaF-iqKnJ7zSWPweoyvr",
+        "TenantName": "aritzia-lp-sis-qa-3ex2ei2o",
+        "Status": "COMPLETED",
+        "StopTimeMillis": 1767732546128
+      },
+      "sourcetype": "SAPMessageProcessingLog",
+      "host": "aritzia-lp-sis-qa-3ex2ei2o.it-cpi017-rt.cfapps.us30.hana.ondemand.com"
+    }
+  },
+  "resource": {
+    "type": "integrations.googleapis.com/IntegrationVersion",
+    "labels": {
+      "product": "product",
+      "version": "",
+      "resource_container": "aritzia-lp-sis-qa-3ex2ei2o",
+      "location": "us30",
+      "integration": "DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub"
+    }
+  },
+  "timestamp": "2026-01-06T20:49:06.543965368Z",
+  "severity": "INFO",
+  "labels": {
+    "datacenter": "us30",
+    "logVersion": "3.0",
+    "env": "qa",
+    "role": "integration",
+    "team": "product-technology",
+    "product": "product",
+    "platform": "sap",
+    "tier": "1",
+    "source": "sap-sis",
+    "domain": "product",
+    "app": ""
+  },
+  "logName": "projects/atz-api-logs-qa/logs/apigee",
+  "receiveTimestamp": "2026-01-06T20:49:06.543965368Z"
+}

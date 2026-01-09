@@ -1,0 +1,15 @@
+# Performance test results
+*.jtl
+*.log
+*.csv
+
+# JMeter HTML reports
+html-report/
+*-report/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Keep directory structure
+!.gitkeep
