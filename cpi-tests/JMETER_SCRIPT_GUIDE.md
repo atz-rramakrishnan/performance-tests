@@ -28,7 +28,7 @@ cd C:\Tools\apache-jmeter-5.6.3\bin
 1. Click on "Test Plan" in the left tree
 2. **Name**: "CPI Logs - Gradual Ramp-Up Test"
 3. **Comments**: "Performance test for CPI logs with gradual ramp-up to 5000 TPS"
-4. Check **"Run Thread Groups consecutively"** = OFF (we want parallel)
+4. Check **"Run Thread Groups consecutively"** = ✓ CHECKED (OAuth token must be fetched first)
 
 ### Step 3: Add User Defined Variables
 
@@ -40,8 +40,72 @@ Add these variables:
 | `baseUrl` | `${__P(baseUrl,api.qa.aritzia.com)}` |
 | `targetTPS` | `${__P(targetTPS,5000)}` |
 | `testDuration` | `${__P(testDuration,1800)}` |
+| `clientId` | `${__P(clientId,YOUR_CLIENT_ID)}` |
+| `clientSecret` | `${__P(clientSecret,YOUR_CLIENT_SECRET)}` |
 
-### Step 4: Add Thread Group
+**Note**: Replace `YOUR_CLIENT_ID` and `YOUR_CLIENT_SECRET` with actual OAuth credentials or pass them as command-line parameters.
+
+### Step 4: Add OAuth Token Thread Group
+
+Right-click on Test Plan → Add → Threads → Thread Group
+
+**Thread Group Settings:**
+- **Name**: "Get Auth Token"
+- **Number of Threads (users)**: `1`
+- **Ramp-up period (seconds)**: `1`
+- **Loop Count**: `1` (only need token once)
+- **Action to be taken after a Sampler error**: Continue
+
+**This thread group must run FIRST** to get the OAuth token before the main load test runs.
+
+### Step 5: Add OAuth Token Request
+
+Right-click on "Get Auth Token" Thread Group → Add → Sampler → HTTP Request
+
+**HTTP Request Settings:**
+- **Name**: "Request Auth Token"
+- **Protocol**: `https`
+- **Server Name or IP**: `${baseUrl}`
+- **Port Number**: `443`
+- **HTTP Request Method**: `POST`
+- **Path**: `/oauth2/token`
+
+**Parameters Tab** (not Body Data):
+
+Click "Add" button to add these parameters:
+| Name | Value | Encode? | Include Equals? |
+|------|-------|---------|-----------------|
+| `grant_type` | `client_credentials` | ✓ | ✓ |
+| `client_id` | `${clientId}` | ✓ | ✓ |
+| `client_secret` | `${clientSecret}` | ✓ | ✓ |
+
+### Step 6: Extract OAuth Token
+
+Right-click on "Request Auth Token" → Add → Post Processors → JSON Extractor
+
+**JSON Extractor Settings:**
+- **Name**: "Read Token"
+- **Names of created variables**: `accesstoken`
+- **JSON Path expressions**: `$.access_token`
+- **Match No. (0 for Random)**: `1`
+- **Default Values**: `TOKEN_NOT_FOUND`
+
+### Step 7: Store Token in Properties
+
+Right-click on "Request Auth Token" → Add → Post Processors → JSR223 PostProcessor
+
+**JSR223 PostProcessor Settings:**
+- **Name**: "Store Token for Other Threads"
+- **Script Language**: `groovy`
+- **Script**:
+```groovy
+props.put('accesstoken', vars.get('accesstoken'))
+log.info('Access token stored: ' + vars.get('accesstoken'))
+```
+
+This makes the token available to all thread groups via `${__P(accesstoken)}`.
+
+### Step 8: Add Main Thread Group
 
 Right-click on Test Plan → Add → Threads → Thread Group
 
@@ -59,7 +123,7 @@ Right-click on Test Plan → Add → Threads → Thread Group
 - **Delay Thread creation until needed**: ✓ Checked
 - **Specify Thread lifetime**: Leave unchecked
 
-### Step 5: Add HTTP Request - CPI Log Collector
+### Step 9: Add HTTP Request - CPI Log Collector
 
 Right-click on Thread Group → Add → Sampler → HTTP Request
 
@@ -81,7 +145,7 @@ Right-click on Thread Group → Add → Sampler → HTTP Request
 
 **Parameters Tab**: Leave empty (using Body Data instead)
 
-### Step 6: Add HTTP Request - PubSub Error Log
+### Step 10: Add HTTP Request - PubSub Error Log
 
 Right-click on Thread Group → Add → Sampler → HTTP Request
 
@@ -99,21 +163,22 @@ Right-click on Thread Group → Add → Sampler → HTTP Request
 1. Load from file: `test-data/pubsub_error_log.json`
 2. OR paste JSON content directly
 
-### Step 7: Add HTTP Header Manager
+### Step 11: Add HTTP Header Manager
 
-Right-click on Thread Group → Add → Config Element → HTTP Header Manager
+Right-click on "CPI Log Requests - Gradual Ramp" Thread Group → Add → Config Element → HTTP Header Manager
 
 **Headers to Add:**
 | Name | Value |
 |------|-------|
+| `Authorization` | `Bearer ${__P(accesstoken)}` |
 | `Content-Type` | `application/json` |
 | `Accept` | `application/json` |
 
-*(Add API key header if authentication required)*
+**Important**: The `Authorization` header uses the OAuth token fetched in Step 4-7.
 
-### Step 8: Add Constant Throughput Timer
+### Step 12: Add Constant Throughput Timer
 
-Right-click on Thread Group → Add → Timer → Constant Throughput Timer
+Right-click on "CPI Log Requests - Gradual Ramp" Thread Group → Add → Timer → Constant Throughput Timer
 
 **Timer Settings:**
 - **Name**: "Throughput Controller"
@@ -124,7 +189,7 @@ Right-click on Thread Group → Add → Timer → Constant Throughput Timer
 
 **Note**: JMeter uses requests per MINUTE, so 5000 TPS = 300,000 req/min
 
-### Step 9: Add Listeners
+### Step 13: Add Listeners
 
 #### Add View Results Tree (for debugging)
 Right-click on Test Plan → Add → Listener → View Results Tree
@@ -140,7 +205,7 @@ Right-click on Test Plan → Add → Listener → Aggregate Report
 Right-click on Test Plan → Add → Listener → Summary Report
 - **Name**: "Summary Report"
 
-### Step 10: Save the Test
+### Step 14: Save the Test
 
 File → Save As → `CPI_Logs_Gradual_Ramp.jmx`
 
