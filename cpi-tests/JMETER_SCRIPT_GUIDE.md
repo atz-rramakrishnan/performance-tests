@@ -123,7 +123,21 @@ Right-click on Test Plan → Add → Threads → Thread Group
 - **Delay Thread creation until needed**: ✓ Checked
 - **Specify Thread lifetime**: Leave unchecked
 
+---
+
+## ⚠️ IMPORTANT: Add Both HTTP Samplers (Steps 9 & 10)
+
+Your test needs **TWO HTTP samplers** under the Thread Group:
+1. ✅ **CPI Log Collector** (Step 9) - Multiple log entries
+2. ✅ **PubSub Error Logs** (Step 10) - Large payload with stacktrace
+
+Both samplers send requests to the same endpoint but with different payloads.
+
+---
+
 ### Step 9: Add HTTP Request - CPI Log Collector
+
+Right-click on "CPI Log Requests - Gradual Ramp" Thread Group → Add → Sampler → HTTP Request
 
 Right-click on Thread Group → Add → Sampler → HTTP Request
 
@@ -147,7 +161,9 @@ Right-click on Thread Group → Add → Sampler → HTTP Request
 
 ### Step 10: Add HTTP Request - PubSub Error Log
 
-Right-click on Thread Group → Add → Sampler → HTTP Request
+⚠️ **IMPORTANT**: This is the SECOND HTTP sampler - don't skip this!
+
+Right-click on "CPI Log Requests - Gradual Ramp" Thread Group → Add → Sampler → HTTP Request
 
 **HTTP Request Settings:**
 - **Name**: "POST PubSub Error Logs"
@@ -160,8 +176,23 @@ Right-click on Thread Group → Add → Sampler → HTTP Request
 - **Content encoding**: `UTF-8`
 
 **Body Data Tab:**
-1. Load from file: `test-data/pubsub_error_log.json`
-2. OR paste JSON content directly
+1. Select "Body Data" tab
+2. Click the folder icon to load from file
+3. Browse to: `test-data/pubsub_error_log.json`
+4. OR paste the JSON content directly from the file
+
+**Parameters Tab**: Leave empty (using Body Data instead)
+
+**💡 Why this sampler?** 
+- Tests large payloads (stacktraces, error data)
+- Mimics production CPI error scenarios
+- Helps validate system performance with heavy log data
+
+**🎯 Result**: Your test will now alternate between sending:
+- CPI Log Collector requests (multiple logs)
+- PubSub Error Log requests (large error payloads)
+
+---
 
 ### Step 11: Add HTTP Header Manager
 
