@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="CPI-Logs-GradualRamp-Up-Test">
+      <stringProp name="TestPlan.comments">Performance test for CPI logs with gradual ramp-up to 5000 TPS</stringProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="api_test_vars">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="baseUrl" elementType="Argument">
+            <stringProp name="Argument.name">baseUrl</stringProp>
+            <stringProp name="Argument.value">${__P(baseUrl,api.qa.aritzia.com)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="targetTPS" elementType="Argument">
+            <stringProp name="Argument.name">targetTPS</stringProp>
+            <stringProp name="Argument.value">${__P(targetTPS,5000)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="testDuration" elementType="Argument">
+            <stringProp name="Argument.name">testDuration</stringProp>
+            <stringProp name="Argument.value">${__P(testDuration,1800)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clientId" elementType="Argument">
+            <stringProp name="Argument.name">clientId</stringProp>
+            <stringProp name="Argument.value">3Y1toeaAEGPZkLpc3pWswg5oBz2XAAjMX8IEKXEePAdxOghT</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="clientSecret" elementType="Argument">
+            <stringProp name="Argument.name">clientSecret</stringProp>
+            <stringProp name="Argument.value">zIYzbAfAPZjHB4aXbN7xA7okn1vIAJjPZdAM7E2cmt5d66NmsvsAeHGFUyg9cEok</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">api test variables</stringProp>
+      </Arguments>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Get Auth Token" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Request Auth Token">
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/oauth2/token</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="grant_type" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">client_credentials</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">grant_type</stringProp>
+              </elementProp>
+              <elementProp name="client_id" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">${clientId}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">client_id</stringProp>
+              </elementProp>
+              <elementProp name="client_secret" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">${clientSecret}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">client_secret</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Read Token" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">accesstoken</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs"> $.access_token</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">TOKEN_NOT_FOUND</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">props.put(&apos;accesstoken&apos;, vars.get(&apos;accesstoken&apos;))</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Read Token Timestamp" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">issued_at</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.issued_at</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Store Token for Other Threads" enabled="true">
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">${__setProperty(, ${accesstoken})};
+
+
+import org.apache.jmeter.util.JMeterUtils;
+JMeterUtils.setProperty(&quot;accesstoken&quot;, vars.get(&quot;accesstoken&quot;));</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="CPI Log Requests - Gradual Ramp" enabled="true">
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
+        <intProp name="ThreadGroup.num_threads">500</intProp>
+        <intProp name="ThreadGroup.ramp_time">600</intProp>
+        <longProp name="ThreadGroup.duration">1800</longProp>
+        <longProp name="ThreadGroup.delay">0</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1000</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST CPI Log Collector Logs" enabled="true">
+          <stringProp name="TestPlan.comments">Sends multiple CPI log entries in one request</stringProp>
+          <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.path">/services/collector/event</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;insertId&quot;: &quot;32plhxf12b64z&quot;,&#xd;
+  &quot;jsonPayload&quot;: {&#xd;
+    &quot;metadata&quot;: {&#xd;
+      &quot;serviceName&quot;: &quot;DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub&quot;,&#xd;
+      &quot;correlationId&quot;: &quot;d44d94c0-5ca1-4b0a-86fa-58848aa76d85&quot;,&#xd;
+      &quot;proxy&quot;: &quot;logging&quot;,&#xd;
+      &quot;node&quot;: &quot;2&quot;,&#xd;
+      &quot;receiverIds&quot;: &quot;&quot;,&#xd;
+      &quot;senderId&quot;: &quot;&quot;,&#xd;
+      &quot;httpMethod&quot;: &quot;POST&quot;,&#xd;
+      &quot;totalResponseTimeInMS&quot;: 427,&#xd;
+      &quot;stopTimeInMS&quot;: 1767732546128,&#xd;
+      &quot;messageId&quot;: &quot;&quot;,&#xd;
+      &quot;org&quot;: &quot;aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+      &quot;appName&quot;: &quot;cpi-logcollector&quot;,&#xd;
+      &quot;logLabel&quot;: &quot;sap-sis&quot;,&#xd;
+      &quot;startTimeInMS&quot;: 1767732545701,&#xd;
+      &quot;statusReason&quot;: &quot;COMPLETED&quot;,&#xd;
+      &quot;severity&quot;: &quot;info&quot;,&#xd;
+      &quot;contentType&quot;: &quot;application/json&quot;,&#xd;
+      &quot;apiProduct&quot;: &quot;cpi-logcollector-v1&quot;,&#xd;
+      &quot;version&quot;: &quot;9&quot;,&#xd;
+      &quot;system&quot;: &quot;aritzia-lp-sis-qa-3ex2ei2o.it-cpi017-rt.cfapps.us30.hana.ondemand.com&quot;&#xd;
+    },&#xd;
+    &quot;data&quot;: {&#xd;
+      &quot;source&quot;: &quot;SAP_SIS_QA&quot;,&#xd;
+      &quot;event&quot;: {&#xd;
+        &quot;LogLevel&quot;: &quot;ERROR&quot;,&#xd;
+        &quot;StartTimeMillis&quot;: 1767732545701,&#xd;
+        &quot;OriginComponentName&quot;: &quot;CPI_aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+        &quot;LogLevelExternal&quot;: &quot;INFO&quot;,&#xd;
+        &quot;TransmissionLagMillis&quot;: 110,&#xd;
+        &quot;IntegrationFlowId&quot;: &quot;DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub&quot;,&#xd;
+        &quot;TransactionId&quot;: &quot;bb321a5d5cae4576b9bb2ec4c4ad4c1f&quot;,&#xd;
+        &quot;DurationMillis&quot;: 427,&#xd;
+        &quot;LogSentAtMillis&quot;: 1767732546238,&#xd;
+        &quot;StopTime&quot;: &quot;2026-01-06 20:49:06.128&quot;,&#xd;
+        &quot;CorrelationId&quot;: &quot;AGlddUHAPpkPfySpZ6YzGemPjZ38&quot;,&#xd;
+        &quot;LogEventId&quot;: &quot;A8kf2AVgqhluU_7m4lZ8HQ&quot;,&#xd;
+        &quot;Node&quot;: &quot;2&quot;,&#xd;
+        &quot;LocalComponentName&quot;: &quot;CPI_aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+        &quot;LogEventType&quot;: &quot;Run&quot;,&#xd;
+        &quot;StartTime&quot;: &quot;2026-01-06 20:49:05.701&quot;,&#xd;
+        &quot;ReceiverIds&quot;: [],&#xd;
+        &quot;PreviousComponentName&quot;: &quot;CPI_aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+        &quot;MessageGuid&quot;: &quot;AGlddUHkY40Onk76DSpFR7lKp0ma&quot;,&#xd;
+        &quot;RunId&quot;: &quot;AGlddUFpdaF-iqKnJ7zSWPweoyvr&quot;,&#xd;
+        &quot;TenantName&quot;: &quot;aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+        &quot;Status&quot;: &quot;COMPLETED&quot;,&#xd;
+        &quot;StopTimeMillis&quot;: 1767732546128&#xd;
+      },&#xd;
+      &quot;sourcetype&quot;: &quot;SAPMessageProcessingLog&quot;,&#xd;
+      &quot;host&quot;: &quot;aritzia-lp-sis-qa-3ex2ei2o.it-cpi017-rt.cfapps.us30.hana.ondemand.com&quot;&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;resource&quot;: {&#xd;
+    &quot;type&quot;: &quot;integrations.googleapis.com/IntegrationVersion&quot;,&#xd;
+    &quot;labels&quot;: {&#xd;
+      &quot;product&quot;: &quot;product&quot;,&#xd;
+      &quot;version&quot;: &quot;&quot;,&#xd;
+      &quot;resource_container&quot;: &quot;aritzia-lp-sis-qa-3ex2ei2o&quot;,&#xd;
+      &quot;location&quot;: &quot;us30&quot;,&#xd;
+      &quot;integration&quot;: &quot;DomainClassDelta_CentricRMQ_to_DomainClassDelta_Pubsub&quot;&#xd;
+    }&#xd;
+  },&#xd;
+  &quot;timestamp&quot;: &quot;2026-01-06T20:49:06.543965368Z&quot;,&#xd;
+  &quot;severity&quot;: &quot;INFO&quot;,&#xd;
+  &quot;labels&quot;: {&#xd;
+    &quot;datacenter&quot;: &quot;us30&quot;,&#xd;
+    &quot;logVersion&quot;: &quot;3.0&quot;,&#xd;
+    &quot;env&quot;: &quot;qa&quot;,&#xd;
+    &quot;role&quot;: &quot;integration&quot;,&#xd;
+    &quot;team&quot;: &quot;product-technology&quot;,&#xd;
+    &quot;product&quot;: &quot;product&quot;,&#xd;
+    &quot;platform&quot;: &quot;sap&quot;,&#xd;
+    &quot;tier&quot;: &quot;1&quot;,&#xd;
+    &quot;source&quot;: &quot;sap-sis&quot;,&#xd;
+    &quot;domain&quot;: &quot;product&quot;,&#xd;
+    &quot;app&quot;: &quot;&quot;&#xd;
+  },&#xd;
+  &quot;logName&quot;: &quot;projects/atz-api-logs-qa/logs/apigee&quot;,&#xd;
+  &quot;receiveTimestamp&quot;: &quot;2026-01-06T20:49:06.543965368Z&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer ${__P(accesstoken)}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Throughput Controller" enabled="true">
+          <intProp name="calcMode">1</intProp>
+          <doubleProp>
+            <name>throughput</name>
+            <value>300000.0</value>
+            <savedValue>0.0</savedValue>
+          </doubleProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">results/gradual-ramp-results.jtl</stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
