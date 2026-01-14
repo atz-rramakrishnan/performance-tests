@@ -142,7 +142,7 @@ JMeterUtils.setProperty(&quot;accesstoken&quot;, vars.get(&quot;accesstoken&quot
           <stringProp name="HTTPSampler.domain">${baseUrl}</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/services/collector/event</stringProp>
+          <stringProp name="HTTPSampler.path">/logging/log</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>

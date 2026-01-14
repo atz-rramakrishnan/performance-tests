@@ -39,7 +39,7 @@ CPI-Logs-GradualRamp-Up-Test
 | Server Name or IP | `${baseUrl}` |
 | Port | `443` |
 | Method | `POST` |
-| Path | `/services/collector/event` |
+| Path | `/logging/log` |
 | Content Encoding | `UTF-8` |
 
 ### 4. Add Request Body

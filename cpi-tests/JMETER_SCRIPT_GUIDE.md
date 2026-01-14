@@ -148,7 +148,7 @@ Right-click on Thread Group → Add → Sampler → HTTP Request
 - **Server Name or IP**: `${baseUrl}`
 - **Port Number**: `443`
 - **HTTP Request Method**: `POST`
-- **Path**: `/services/collector/event`
+- **Path**: `/logging/log`
 - **Content encoding**: `UTF-8`
 
 **Body Data Tab:**
@@ -172,7 +172,7 @@ Right-click on "CPI Log Requests - Gradual Ramp" Thread Group → Add → Sample
 - **Server Name or IP**: `${baseUrl}`
 - **Port Number**: `443`
 - **HTTP Request Method**: `POST`
-- **Path**: `/services/collector/event`
+- **Path**: `/logging/log`
 - **Content encoding**: `UTF-8`
 
 **Body Data Tab:**
