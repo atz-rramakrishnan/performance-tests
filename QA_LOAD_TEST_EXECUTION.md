@@ -9,10 +9,12 @@
 ## Prerequisites
 
 ✅ Ensure you have:
-- `gcloud` CLI installed and authenticated
+- Access to GCP Cloud Shell (or `gcloud` CLI installed locally)
 - Access to `atz-api-logs-qa` project
 - Permissions to modify Pub/Sub subscriptions
 - Access to Cloud Run and Logs Explorer consoles
+
+💡 **Cloud Shell Users:** All commands are optimized for bash. No installation needed!
 
 ---
 
@@ -33,9 +35,12 @@
 ## Phase 1: Pre-Test Preparation (10 minutes)
 
 ### Step 1.1: Get Current Cloud Run URL
-```powershell
+```bash
 # Get the Cloud Run service URL
-gcloud run services describe logs-publisher --region=us-east4 --project=atz-api-logs-qa --format="value(status.url)"
+gcloud run services describe logs-publisher \
+  --region=us-east4 \
+  --project=atz-api-logs-qa \
+  --format="value(status.url)"
 ```
 
 **Expected Output:** `https://logs-publisher-XXXXXXXXX.run.app`
@@ -50,9 +55,11 @@ QA_CLOUD_RUN_URL=https://logs-publisher-_____________.run.app
 ---
 
 ### Step 1.2: Document Current Subscription State
-```powershell
+```bash
 # List all subscriptions
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,pushConfig.pushEndpoint)"
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,pushConfig.pushEndpoint)"
 ```
 
 **Expected Output:** All 4 subscriptions should show push endpoints with the Cloud Run URL.
@@ -62,9 +69,11 @@ gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,
 ---
 
 ### Step 1.3: Check Current Message Backlog
-```powershell
+```bash
 # Check current undelivered messages for all subscriptions
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,numUndeliveredMessages)"
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,numUndeliveredMessages)"
 ```
 
 **Expected Output:** Should show low numbers (< 1000)
@@ -76,9 +85,9 @@ gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,
 ## Phase 2: Convert Push to Pull Mode (5 minutes)
 
 ### Step 2.1: Update logs-apigee-gcr-datadog to Pull
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-datadog `
-  --push-endpoint="" `
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-datadog \
+  --push-endpoint="" \
   --project=atz-api-logs-qa
 ```
 
@@ -90,9 +99,9 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-apigee-gcr-dat
 ---
 
 ### Step 2.2: Update logs-apigee-gcr-gcp to Pull
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-gcp `
-  --push-endpoint="" `
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-gcp \
+  --push-endpoint="" \
   --project=atz-api-logs-qa
 ```
 
@@ -104,9 +113,9 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-apigee-gcr-gcp
 ---
 
 ### Step 2.3: Update logs-cpi-gcr-datadog to Pull
-```powershell
-gcloud pubsub subscriptions update logs-cpi-gcr-datadog `
-  --push-endpoint="" `
+```bash
+gcloud pubsub subscriptions update logs-cpi-gcr-datadog \
+  --push-endpoint="" \
   --project=atz-api-logs-qa
 ```
 
@@ -118,9 +127,9 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-cpi-gcr-datado
 ---
 
 ### Step 2.4: Update logs-cpi-gcr-gcp to Pull
-```powershell
-gcloud pubsub subscriptions update logs-cpi-gcr-gcp `
-  --push-endpoint="" `
+```bash
+gcloud pubsub subscriptions update logs-cpi-gcr-gcp \
+  --push-endpoint="" \
   --project=atz-api-logs-qa
 ```
 
@@ -132,12 +141,23 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-cpi-gcr-gcp].
 ---
 
 ### Step 2.5: Verify Pull Mode is Active
-```powershell
+```bash
 # Verify all subscriptions are in pull mode (pushEndpoint should be empty)
-gcloud pubsub subscriptions describe logs-apigee-gcr-datadog --project=atz-api-logs-qa --format="value(pushConfig.pushEndpoint)"
-gcloud pubsub subscriptions describe logs-apigee-gcr-gcp --project=atz-api-logs-qa --format="value(pushConfig.pushEndpoint)"
-gcloud pubsub subscriptions describe logs-cpi-gcr-datadog --project=atz-api-logs-qa --format="value(pushConfig.pushEndpoint)"
-gcloud pubsub subscriptions describe logs-cpi-gcr-gcp --project=atz-api-logs-qa --format="value(pushConfig.pushEndpoint)"
+gcloud pubsub subscriptions describe logs-apigee-gcr-datadog \
+  --project=atz-api-logs-qa \
+  --format="value(pushConfig.pushEndpoint)"
+
+gcloud pubsub subscriptions describe logs-apigee-gcr-gcp \
+  --project=atz-api-logs-qa \
+  --format="value(pushConfig.pushEndpoint)"
+
+gcloud pubsub subscriptions describe logs-cpi-gcr-datadog \
+  --project=atz-api-logs-qa \
+  --format="value(pushConfig.pushEndpoint)"
+
+gcloud pubsub subscriptions describe logs-cpi-gcr-gcp \
+  --project=atz-api-logs-qa \
+  --format="value(pushConfig.pushEndpoint)"
 ```
 
 **Expected Output:** All commands should return empty (blank lines).
@@ -150,18 +170,23 @@ gcloud pubsub subscriptions describe logs-cpi-gcr-gcp --project=atz-api-logs-qa 
 
 ### Step 3.1: Start Monitoring Script
 
-**Option A: PowerShell Monitoring (Recommended for Windows)**
-```powershell
-# Run this in a separate PowerShell window
-while ($true) {
-    Clear-Host
-    Write-Host "=== QA Load Test Message Accumulation ===" -ForegroundColor Cyan
-    Write-Host "Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n" -ForegroundColor Yellow
+**Bash Monitoring (Cloud Shell)**
+```bash
+# Run this in Cloud Shell - press Ctrl+C to stop
+while true; do
+    clear
+    echo "=== QA Load Test Message Accumulation ==="
+    echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
     
-    gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,numUndeliveredMessages,oldestUnackedMessageAge)"
+    gcloud pubsub subscriptions list \
+      --project=atz-api-logs-qa \
+      --format="table(name,numUndeliveredMessages,oldestUnackedMessageAge)"
     
-    Start-Sleep -Seconds 60
-}
+    echo ""
+    echo "Refreshing in 60 seconds... (Press Ctrl+C to stop)"
+    sleep 60
+done
 ```
 
 ---
@@ -187,9 +212,12 @@ while ($true) {
 ### Step 3.3: Document Peak Backlog State
 
 **When you reach ~1M messages:**
-```powershell
+```bash
 # Capture final pre-test state
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,numUndeliveredMessages,oldestUnackedMessageAge)" > qa-load-test-baseline.txt
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,numUndeliveredMessages,oldestUnackedMessageAge)" \
+  > qa-load-test-baseline.txt
 ```
 
 📝 **ACTION:** Save the output file for your test report.
@@ -220,10 +248,10 @@ Before executing, open these in your browser:
 
 ⚠️ **Replace `<HASH>` with the URL you saved in Step 1.1**
 
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-datadog `
-  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" `
-  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" `
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-datadog \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
   --project=atz-api-logs-qa
 ```
 
@@ -236,10 +264,10 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-apigee-gcr-dat
 
 ### Step 4.3: Revert logs-apigee-gcr-gcp to Push
 
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-gcp `
-  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" `
-  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" `
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-gcp \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
   --project=atz-api-logs-qa
 ```
 
@@ -252,10 +280,10 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-apigee-gcr-gcp
 
 ### Step 4.4: Revert logs-cpi-gcr-datadog to Push
 
-```powershell
-gcloud pubsub subscriptions update logs-cpi-gcr-datadog `
-  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" `
-  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" `
+```bash
+gcloud pubsub subscriptions update logs-cpi-gcr-datadog \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
   --project=atz-api-logs-qa
 ```
 
@@ -268,10 +296,10 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-cpi-gcr-datado
 
 ### Step 4.5: Revert logs-cpi-gcr-gcp to Push
 
-```powershell
-gcloud pubsub subscriptions update logs-cpi-gcr-gcp `
-  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" `
-  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" `
+```bash
+gcloud pubsub subscriptions update logs-cpi-gcr-gcp \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
   --project=atz-api-logs-qa
 ```
 
@@ -284,9 +312,11 @@ Updated subscription [projects/atz-api-logs-qa/subscriptions/logs-cpi-gcr-gcp].
 
 ### Step 4.6: Verify Push Mode is Active
 
-```powershell
+```bash
 # Verify all subscriptions are back in push mode
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,pushConfig.pushEndpoint)"
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,pushConfig.pushEndpoint)"
 ```
 
 **Expected Output:** All 4 subscriptions should show the Cloud Run push endpoint.
@@ -301,52 +331,66 @@ gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,
 
 ### Step 5.1: Monitor Message Processing Rate
 
-```powershell
-# Run this in a PowerShell window
-while ($true) {
-    Clear-Host
-    Write-Host "=== QA Load Test - Message Processing ===" -ForegroundColor Cyan
-    Write-Host "Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n" -ForegroundColor Yellow
+```bash
+# Run this in Cloud Shell - press Ctrl+C to stop
+while true; do
+    clear
+    echo "=== QA Load Test - Message Processing ==="
+    echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
     
-    $subs = gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="json" | ConvertFrom-Json
+    # Get subscription data
+    gcloud pubsub subscriptions list \
+      --project=atz-api-logs-qa \
+      --format="table(name,numUndeliveredMessages)"
     
-    $total = 0
-    foreach ($sub in $subs) {
-        $count = [int]$sub.numUndeliveredMessages
-        $total += $count
-        Write-Host "$($sub.name.Split('/')[-1]): $count messages" -ForegroundColor $(if ($count -gt 100000) { "Red" } elseif ($count -gt 10000) { "Yellow" } else { "Green" })
-    }
+    # Calculate total
+    total=$(gcloud pubsub subscriptions list \
+      --project=atz-api-logs-qa \
+      --format="value(numUndeliveredMessages)" | \
+      awk '{sum+=$1} END {print sum}')
     
-    Write-Host "`nTotal Undelivered: $total" -ForegroundColor $(if ($total -gt 100000) { "Red" } elseif ($total -gt 10000) { "Yellow" } else { "Green" })
-    
-    Start-Sleep -Seconds 30
-}
+    echo ""
+    echo "Total Undelivered: $total messages"
+    echo ""
+    echo "Refreshing in 30 seconds... (Press Ctrl+C to stop)"
+    sleep 30
+done
 ```
 
 ---
 
 ### Step 5.2: Monitor Cloud Run Instance Count
 
-```powershell
-# Run this in another PowerShell window
-while ($true) {
-    Clear-Host
-    Write-Host "=== Cloud Run Instance Count ===" -ForegroundColor Cyan
-    Write-Host "Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n" -ForegroundColor Yellow
+```bash
+# Run this in a new Cloud Shell tab - press Ctrl+C to stop
+while true; do
+    clear
+    echo "=== Cloud Run Service Status ==="
+    echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
     
-    gcloud run services describe logs-publisher --region=us-east4 --project=atz-api-logs-qa --format="value(status.traffic[0].percent,status.traffic[0].revisionName,metadata.annotations.autoscaling\.knative\.dev/maxScale)"
+    gcloud run services describe logs-publisher \
+      --region=us-east4 \
+      --project=atz-api-logs-qa \
+      --format="table(status.traffic[0].revisionName,status.traffic[0].percent,metadata.annotations.autoscaling.knative.dev/maxScale)"
     
-    Start-Sleep -Seconds 30
-}
+    echo ""
+    echo "Refreshing in 30 seconds... (Press Ctrl+C to stop)"
+    sleep 30
+done
 ```
 
 ---
 
 ### Step 5.3: Watch for Errors in Logs
 
-```powershell
+```bash
 # Monitor real-time logs for errors
-gcloud run services logs tail logs-publisher --region=us-east4 --project=atz-api-logs-qa --format="table(timestamp,severity,textPayload)"
+gcloud run services logs tail logs-publisher \
+  --region=us-east4 \
+  --project=atz-api-logs-qa \
+  --format="table(timestamp,severity,textPayload)"
 ```
 
 ---
@@ -374,9 +418,11 @@ gcloud run services logs tail logs-publisher --region=us-east4 --project=atz-api
 
 **Target:** All subscriptions should have < 1000 undelivered messages
 
-```powershell
+```bash
 # Check if backlog is cleared
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,numUndeliveredMessages)"
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,numUndeliveredMessages)"
 ```
 
 📝 **ACTION:** Note the time when backlog cleared: ___________
@@ -393,9 +439,12 @@ gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,
 
 ### Step 6.3: Collect Final Metrics
 
-```powershell
+```bash
 # Export metrics for reporting
-gcloud run services describe logs-publisher --region=us-east4 --project=atz-api-logs-qa --format="json" > qa-load-test-final-state.json
+gcloud run services describe logs-publisher \
+  --region=us-east4 \
+  --project=atz-api-logs-qa \
+  --format="json" > qa-load-test-final-state.json
 ```
 
 ---
@@ -500,9 +549,11 @@ Availability = (Total Requests - Failed Requests) / Total Requests * 100
 
 ### Step 8.1: Verify Normal Operations
 
-```powershell
+```bash
 # Confirm subscriptions are in push mode
-gcloud pubsub subscriptions list --project=atz-api-logs-qa --format="table(name,pushConfig.pushEndpoint,numUndeliveredMessages)"
+gcloud pubsub subscriptions list \
+  --project=atz-api-logs-qa \
+  --format="table(name,pushConfig.pushEndpoint,numUndeliveredMessages)"
 ```
 
 **Expected:** All subscriptions have push endpoints and low undelivered message counts.
@@ -566,10 +617,10 @@ During QA load test (PES-2289), the following issue was observed:
 ## Quick Start Commands (Copy-Paste Ready)
 
 ### Convert to Pull Mode (All 4 Commands):
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-datadog --push-endpoint="" --project=atz-api-logs-qa; `
-gcloud pubsub subscriptions update logs-apigee-gcr-gcp --push-endpoint="" --project=atz-api-logs-qa; `
-gcloud pubsub subscriptions update logs-cpi-gcr-datadog --push-endpoint="" --project=atz-api-logs-qa; `
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-datadog --push-endpoint="" --project=atz-api-logs-qa && \
+gcloud pubsub subscriptions update logs-apigee-gcr-gcp --push-endpoint="" --project=atz-api-logs-qa && \
+gcloud pubsub subscriptions update logs-cpi-gcr-datadog --push-endpoint="" --project=atz-api-logs-qa && \
 gcloud pubsub subscriptions update logs-cpi-gcr-gcp --push-endpoint="" --project=atz-api-logs-qa
 ```
 
@@ -578,11 +629,23 @@ gcloud pubsub subscriptions update logs-cpi-gcr-gcp --push-endpoint="" --project
 ### Revert to Push Mode (All 4 Commands):
 ⚠️ **REPLACE `<HASH>` with your Cloud Run URL hash!**
 
-```powershell
-gcloud pubsub subscriptions update logs-apigee-gcr-datadog --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" --project=atz-api-logs-qa; `
-gcloud pubsub subscriptions update logs-apigee-gcr-gcp --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" --project=atz-api-logs-qa; `
-gcloud pubsub subscriptions update logs-cpi-gcr-datadog --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" --project=atz-api-logs-qa; `
-gcloud pubsub subscriptions update logs-cpi-gcr-gcp --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" --project=atz-api-logs-qa
+```bash
+gcloud pubsub subscriptions update logs-apigee-gcr-datadog \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
+  --project=atz-api-logs-qa && \
+gcloud pubsub subscriptions update logs-apigee-gcr-gcp \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
+  --project=atz-api-logs-qa && \
+gcloud pubsub subscriptions update logs-cpi-gcr-datadog \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=datadog" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
+  --project=atz-api-logs-qa && \
+gcloud pubsub subscriptions update logs-cpi-gcr-gcp \
+  --push-endpoint="https://logs-publisher-<HASH>.run.app?destination=gcp" \
+  --push-auth-service-account="gcp-logs-pubsub-push@atz-api-logs-qa.iam.gserviceaccount.com" \
+  --project=atz-api-logs-qa
 ```
 
 ---
@@ -591,9 +654,11 @@ gcloud pubsub subscriptions update logs-cpi-gcr-gcp --push-endpoint="https://log
 
 ### Issue: "Permission Denied" Error
 **Solution:** Ensure you have the following roles:
-```powershell
+```bash
 # Check your permissions
-gcloud projects get-iam-policy atz-api-logs-qa --flatten="bindings[].members" --filter="bindings.members:user:YOUR_EMAIL"
+gcloud projects get-iam-policy atz-api-logs-qa \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:user:YOUR_EMAIL"
 ```
 
 **Required Roles:**
@@ -604,7 +669,7 @@ gcloud projects get-iam-policy atz-api-logs-qa --flatten="bindings[].members" --
 
 ### Issue: Subscriptions Not Showing in List
 **Solution:** Verify project context:
-```powershell
+```bash
 gcloud config get-value project
 # Should output: atz-api-logs-qa
 
@@ -616,15 +681,16 @@ gcloud config set project atz-api-logs-qa
 
 ### Issue: Cannot Update Subscription
 **Solution:** Check if subscription exists and is not deleted:
-```powershell
-gcloud pubsub subscriptions describe logs-apigee-gcr-datadog --project=atz-api-logs-qa
+```bash
+gcloud pubsub subscriptions describe logs-apigee-gcr-datadog \
+  --project=atz-api-logs-qa
 ```
 
 ---
 
 ### Issue: Messages Not Accumulating
 **Solution:** Verify upstream log generation is active. Check topics:
-```powershell
+```bash
 gcloud pubsub topics list --project=atz-api-logs-qa
 ```
 
@@ -632,8 +698,11 @@ gcloud pubsub topics list --project=atz-api-logs-qa
 
 ### Issue: Cloud Run Instances Not Scaling
 **Solution:** Check autoscaling settings:
-```powershell
-gcloud run services describe logs-publisher --region=us-east4 --project=atz-api-logs-qa --format="value(metadata.annotations)"
+```bash
+gcloud run services describe logs-publisher \
+  --region=us-east4 \
+  --project=atz-api-logs-qa \
+  --format="value(metadata.annotations)"
 ```
 
 ---
