@@ -463,17 +463,58 @@ timestamp>="[START_TIME]"
 
 ---
 
-### Step 6.5: Verify Data Delivery
+### Step 6.5: Verify Data Delivery & Compare Logging 2.0 vs 3.0
 
-**Check Datadog:**
-1. Navigate to Logs Explorer in Datadog
-2. Filter by `env:qa` and time range
-3. Verify log volume matches expected ~50% of total messages
+**Compare Log Counts (PES-2258 Acceptance Criteria):**
 
-**Check GCP Logging:**
-1. Navigate to Logs Explorer in GCP Console
-2. Query for logs with `jsonPayload.destination="gcp"`
-3. Verify log volume matches expected ~50% of total messages
+Navigate to **GCP Console > Log Analytics > Saved Queries** (atz-api-logs-qa)
+
+**1. Check Logging 3.0 Counts:**
+
+Run these saved queries for the test time range:
+- **Logging 3.0 - API Count** (Apigee logs)
+- **Logging 3.0 - CPI Count** (CPI logs)
+
+📝 **Record counts:**
+- Apigee 3.0 Count: ___________
+- CPI 3.0 Count: ___________
+
+**2. Compare Against Logging 2.0:**
+
+Query Logging 2.0 counts for the same time range:
+```
+resource.type="cloud_run_revision"
+resource.labels.service_name="logs-publisher"
+jsonPayload.loggingVersion="2.0"
+```
+
+📝 **Record counts:**
+- Apigee 2.0 Count: ___________
+- CPI 2.0 Count: ___________
+
+**3. Check for Duplicates:**
+
+Run these saved queries:
+- **Duplicate 3.0 Apigee Logs**
+- **Duplicate 3.0 CPI Logs**
+
+📝 **Record duplicates:**
+- Apigee Duplicates: ___________
+- CPI Duplicates: ___________
+
+**4. Verify Datadog Delivery:**
+
+Check Datadog Logs Explorer:
+- Filter: `env:qa` + test time range
+- Verify ~50% of messages reached Datadog destination
+
+📝 **Record count:**
+- Datadog Log Count: ___________
+
+**✅ Acceptance:**
+- 2.0 and 3.0 counts should match closely (within 1-2%)
+- Minimal or no duplicate logs
+- ~50% delivered to GCP, ~50% to Datadog
 
 ---
 
