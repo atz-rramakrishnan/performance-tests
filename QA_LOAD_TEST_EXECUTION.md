@@ -449,17 +449,31 @@ gcloud run services describe logs-publisher \
 
 ---
 
-### Step 6.4: Query Logs for Error Analysis
+### Step 6.4: Monitor Errors via Datadog Dashboard
 
+**Primary Method - Datadog Dashboard:**
+
+Navigate to: [Platform - API Logging Dashboard](https://us5.datadoghq.com/dashboard/c6z-wn5-hc2/platform-api-logging)
+
+- Check the **"Platform - API → GCR Errors"** tile
+- Set time range to match your test window
+- Verify error counts and patterns
+
+📝 **Record error metrics:**
+- Total Errors: ___________
+- Error Types: ___________
+
+**Alternative - Manual Query (if needed):**
+
+In Logs Explorer, run this query:
 ```
-# In Logs Explorer, run this query:
 resource.type="cloud_run_revision"
 resource.labels.service_name="logs-publisher"
 severity>=ERROR
 timestamp>="[START_TIME]"
 ```
 
-📝 **ACTION:** Count total errors and categorize by type.
+📝 **ACTION:** Document any unexpected errors or anomalies.
 
 ---
 
