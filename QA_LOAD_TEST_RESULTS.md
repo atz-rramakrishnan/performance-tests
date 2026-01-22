@@ -17,7 +17,7 @@ The logs-publisher Cloud Run service successfully processed approximately 1 mill
 ### Key Highlights
 - **100% Service Availability** maintained throughout the test
 - **Zero critical errors** during message processing
-- **Successful auto-scaling** from baseline to 17 active container instances
+- **Successful auto-scaling** from baseline to 100 active container instances (10% of max capacity)
 - **Efficient message processing** with backlog cleared in ~25 minutes
 - **Stable resource utilization** with CPU peaking at ~20% and memory at 16%
 
@@ -166,7 +166,7 @@ Average Processing Rate = 1,000,000 / 1,500 = 666 TPS
 - **Excellent resource efficiency** - CPU never exceeded 20% even during peak load
 - **Memory usage stable** at ~16%, indicating no memory leaks or runaway processes
 - **Significant headroom** for additional load (system can handle 4-5x current load before reaching 80% threshold)
-- **Auto-scaling worked efficiently** - scaled to 17 instances without resource exhaustion
+- **Auto-scaling worked efficiently** - scaled to 100 instances without resource exhaustion
 
 **Verdict:** ✅ **EXCEEDED TARGET** - Resource utilization well below 80% threshold, demonstrating excellent system design and efficient code.
 
@@ -391,7 +391,7 @@ The following success metrics were defined by HP prior to the performance test. 
 - **System Capacity:** ✅ Cloud Run was NOT the bottleneck
 - **Limiting Factor:** Pub/Sub push delivery rate, not Cloud Run processing capacity
 - **Resource Utilization:** Only 20% CPU, 16% memory - significant headroom remaining
-- **Scaling Behavior:** Successfully scaled to 17 instances with room to grow
+- **Scaling Behavior:** Successfully scaled to 100 instances (10% of max capacity) with significant room to grow
 
 **Context & Clarification:**
 The 10k TPS target may be more applicable to direct API load testing rather than Pub/Sub-driven message processing. For Pub/Sub workloads:
@@ -629,7 +629,7 @@ The 10k TPS target may be more applicable to direct API load testing rather than
 **Current Capacity Headroom:**
 - CPU: 60% available (80% target - 20% peak = 60% headroom)
 - Memory: 64% available (80% target - 16% peak = 64% headroom)
-- Instance Scaling: 17 instances used, max limit at ~1000 instances
+- Instance Scaling: 100 instances used (10% of max), 900 instances available
 
 **Projected Max Load:**
 - **CPU-Bound:** Current load × 4 = ~4M messages in similar timeframe
