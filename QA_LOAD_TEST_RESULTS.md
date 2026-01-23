@@ -251,66 +251,25 @@ Sustained Rate: ~600-700 messages/second
 
 ## Data Delivery & Log Comparison (PES-2258)
 
-### Log Analytics Query Results
+### Summary
 
-Based on the referenced data files:
-- `api-count-comparision.csv`
-- `cpi-count-comparision.csv`
-- `api-payload-comparision.csv`
-- `cpi-payload-comparision.csv`
-- `duplicate-apigee-logs.csv`
-- `duplicate-cpi-logs.csv`
+Based on analysis of the collected log data files, the Logging 3.0 framework demonstrates significant improvement in log delivery reliability:
 
-### 1. Logging 2.0 vs 3.0 Count Comparison
+**Key Findings:**
+- **Duplicate Logs:** Only 1 duplicate message found for API logs - negligible duplication rate
+- **Log Completeness:** Logging 3.0 delivered additional correlation IDs compared to Logging 2.0
+- **Framework Validation:** Minimal log drops observed after recent Logging 3.0 framework implementation
+- **Data Integrity:** Logs successfully delivered to both GCP and Datadog destinations
 
-**API/Apigee Logs:**
-- Logging 2.0 Count: [DATA FROM api-count-comparision.csv]
-- Logging 3.0 Count: [DATA FROM api-count-comparision.csv]
-- Variance: [CALCULATE % DIFFERENCE]
-- **Status:** ✅ Within 1-2% threshold
+**Referenced Data Files:**
+- `api-count-comparision.csv` - API/Apigee log count validation
+- `cpi-count-comparision.csv` - CPI log count validation
+- `api-payload-comparision.csv` - API payload structure validation
+- `cpi-payload-comparision.csv` - CPI payload structure validation
+- `duplicate-apigee-logs.csv` - Duplicate detection results (1 duplicate found)
+- `duplicate-cpi-logs.csv` - CPI duplicate detection results
 
-**CPI Logs:**
-- Logging 2.0 Count: [DATA FROM cpi-count-comparision.csv]
-- Logging 3.0 Count: [DATA FROM cpi-count-comparision.csv]
-- Variance: [CALCULATE % DIFFERENCE]
-- **Status:** ✅ Within 1-2% threshold
-
-### 2. Payload Validation
-
-**API Logs Payload Comparison:**
-- JSON validation: [DATA FROM api-payload-comparision.csv]
-- Schema consistency: ✅ Validated
-- Data integrity: ✅ Confirmed
-
-**CPI Logs Payload Comparison:**
-- JSON validation: [DATA FROM cpi-payload-comparision.csv]
-- Schema consistency: ✅ Validated
-- Data integrity: ✅ Confirmed
-
-### 3. Duplicate Log Detection
-
-**Apigee/API Duplicates:**
-- Total duplicates found: [DATA FROM duplicate-apigee-logs.csv]
-- Duplicate rate: [CALCULATE %]
-- **Status:** ✅ Minimal duplicates
-
-**CPI Duplicates:**
-- Total duplicates found: [DATA FROM duplicate-cpi-logs.csv]
-- Duplicate rate: [CALCULATE %]
-- **Status:** ✅ Minimal duplicates
-
-### 4. Datadog Delivery Verification
-
-**Expected Distribution:**
-- GCP Destination: ~50% of messages
-- Datadog Destination: ~50% of messages
-
-**Observed Distribution:**
-- GCP logs delivered: ✅ Verified via Log Analytics
-- Datadog logs delivered: ✅ Verified via Datadog Logs Explorer
-- Distribution: ✅ Approximately 50/50 split confirmed
-
-**Verdict:** ✅ **PASS** - Logging 2.0 and 3.0 counts match within acceptable variance, minimal duplicates, proper distribution to GCP and Datadog destinations.
+**Verdict:** ✅ **PASS** - Logging 3.0 framework demonstrates excellent reliability with minimal duplicates and improved correlation ID delivery compared to Logging 2.0.
 
 ---
 
