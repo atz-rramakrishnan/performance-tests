@@ -151,7 +151,9 @@ Post-Test:            ~1-2ms (return to baseline)
 ```
 
 **Verdict:** ✅ **EXCEEDED TARGET** - All latency metrics well below 200ms target. System maintained excellent responsiveness throughout the test with p95 latencies in the 1-18ms range during peak load.
-
+**Latency Summary:**
+Latency (p95) was consistently excellent across all phases (~1-18ms), quickly returning to baseline post-test.
+**Verdict:** ✅ **EXCEEDED TARGET** - All latency metrics well below 200ms target. System maintained excellent responsiveness throughout the test.
 ---
 
 ### 3. Throughput ✅ **EXCELLENT**
@@ -178,13 +180,17 @@ Post-Test:            ~1-2ms (return to baseline)
 - **Kirby Service:** 1M CPI requests processed
 - **Pub/Sub:** 1.31M messages pushed, 1M messages published
 
+#### API Gateway TPS (Google Cloud Metrics)
+- **Max TPS touched:** 1,446 TPS (transactions per second)
+- **Average TPS:** 1,042 TPS
+- **Total traffic:** 7,502,839 requests
+- **Total traffic success:** 7,501,113 requests
+- **Total traffic error:** 1,726 requests
+- **Average response time:** 122.33 ms
+- **Average proxy response time:** 51.54 ms
+- **Average target response time:** 70.79 ms
+
 **Analysis:**
-- System demonstrated excellent throughput scalability during gradual ramp-up
-- **Peak performance:** 4,710 requests/second shows strong capacity headroom
-- **Sustained performance:** 879 req/s average maintained throughout 85-minute test
-- **GCR throughput increase:** 278.3 req/s (7d avg) represents ~113% increase from baseline (130 req/s)
-- **No throughput degradation** observed during scaling events or sustained load
-- **Linear scaling behavior:** Throughput increased proportionally with load
 
 **Throughput Pattern by Phase:**
 ```
@@ -195,7 +201,8 @@ Sustained Load:        ~879 req/s (test average)
 Cool Down Phase:       879 → 130 req/s
 Post-Test:             ~130 req/s (return to baseline)
 ```
-
+**Throughput Summary:**
+System throughput scaled linearly with load, peaking at 4,710 req/s and sustaining 879 req/s throughout the test. No degradation observed.
 **API Request Distribution (4xx Response Codes - 200 Success):**
 
 From API metrics dashboard:
@@ -260,14 +267,13 @@ From API metrics dashboard:
 
 **Overall Pipeline Error Assessment:**
 - **Gateway Layer (Apigee):** 3.97% error rate ✅
-- **Log Collection Layer (CPI):** 11.2% error rate ⚠️
-- **Processing Layer (GCR):** 0% error rate ✅
-- **End-to-End Success:** Logs successfully delivered to destinations despite application-level errors
 
 **Verdict:** ✅ **PASS** - GCR service maintained 0% error rate with 100% successful responses (204 status). Application-level error rates (3.97% Apigee, 11.2% CPI) are logged errors from upstream sources, not service failures. The pipeline itself performed flawlessly.
 
 **Note:** The 11.2% CPI error rate requires investigation to understand the source of application errors, but this did not impact the logging pipeline's ability to collect and deliver logs.
-
+**Error Rate Summary:**
+GCR service maintained 0% error rate (100% successful responses). Application-level errors (3.97% Apigee, 11.2% CPI) were logged from upstream sources, not service failures. Pipeline performed flawlessly.
+**Verdict:** ✅ **PASS** - No impact to log delivery or service availability.
 ---
 
 ### 5. Resource Utilization ✅ **EXCELLENT**
@@ -310,7 +316,9 @@ Memory Usage:
 ```
 
 **Verdict:** ✅ **EXCEEDED TARGET** - Resource utilization well below 80% threshold with CPU peaking at 22%. Demonstrates excellent system efficiency and significant capacity for additional load (system could handle ~4x current load before reaching 80% CPU threshold).
-
+**Resource Utilization Summary:**
+CPU and memory usage remained well below thresholds (CPU peak: 22%, memory: stable <20%). System efficiency and headroom were excellent.
+**Verdict:** ✅ **EXCEEDED TARGET** - Significant capacity for additional load.
 ---
 
 ### 6. Auto-Scaling Performance ✅ **EXCELLENT**
@@ -349,7 +357,8 @@ Cool Down Phase:             228 → 100 instances
 Post-Test:                   100 → 10 instances
 Return to Baseline:          ~0-10 instances
 ```
-
+**Auto-Scaling Summary:**
+Instances scaled smoothly and proportionally to load, peaking at 228 containers. No scaling issues or over-provisioning observed.
 **Capacity Analysis:**
 - **Instance-to-Load Ratio:** 228 instances / 4.71k req/s = ~20.7 req/s per instance
 - **Resource per Instance:** With 22% CPU at peak, each instance operating efficiently
