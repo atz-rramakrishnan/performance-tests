@@ -442,6 +442,11 @@ Tagged metrics showing 95th percentile latencies by policy and proxy:
 
 ## Pub/Sub Performance Analysis
 
+**Pub/Sub Topic Metrics:**
+- **logs-apigee:** 34.9M operations (sum), average 332k ops, peak 419k ops, sustained high throughput throughout the test window.
+- **logs-cpi:** 1.4M operations (sum), average 14k ops, peak 18k ops, consistent delivery during test.
+These metrics confirm both logs-apigee and logs-cpi topics handled high and steady message rates, as shown in the attached dashboard screenshot.
+
 ### Message Processing Metrics
 
 **From Kirby Count (CPI Logs Only):**
