@@ -99,34 +99,21 @@ Destinations: GCP Logging (11M logs) + Datadog (11M logs)
 **Actual:** 99.93%
 
 **Analysis:**
-- **SLO - GCR Availability Avg (7d):** 99.93% (displayed on dashboard)
-- Service maintained near-perfect availability throughout the 85-minute test
-- No downtime or service interruptions across any component
-- **Platform - logs-publisher: Availability SLO** exceeded target by 0.03%
-- Response time alerting SLO showed 99.69% compliance (slight increase expected under load)
 
 **Availability Breakdown by Component:**
-- **Apigee API Gateway:** 100% availability (no 5xx errors from gateway itself)
-- **Kirby Service:** Successfully processed 1M requests
-- **GCR logs-publisher:** 99.93% availability
-- **Log Delivery:** Successful delivery to both GCP and Datadog destinations
 
 **Verdict:** ✅ **EXCEEDED TARGET** - Availability requirement met with 99.93% uptime, exceeding the 99.90% target.
 
----
 
 ### 2. Latency Performance ✅ **PASS**
 
 **Target:** p95 ≤ 200ms for GCR services  
 **Observed Metrics:**
 
-#### GCR Latency Metrics (7-day rolling average)
 - **SLO - GCR Latency Avg (7d):** 170.62ms (↑ 43.22% from baseline)
 - **SLO - GCR User Execution Avg (7d):** 165.35ms (↑ 45.13% from baseline)
-- **SLO - GCR Latency Avg:** 104.4ms (overall average)
 - **SLO - GCR User Execution Avg:** 104.19ms (overall average)
 
-#### Peak Latency (during test window)
 - **GCR - Latency p95:** Peak ~1.2ms during test (chart shows very low latency)
 - **GCR - Latency p95 (specific intervals):** Maintained well below 200ms target
 - **API Latency (by Proxy):** Most proxies maintained sub-second latency
@@ -135,10 +122,11 @@ Destinations: GCP Logging (11M logs) + Datadog (11M logs)
 **Analysis:**
 - The 7-day rolling averages (170ms, 165ms) include the load test period, explaining elevation
 - **During steady-state operation:** Latency remained excellent (p95 ~1-18ms range)
-- **During peak load:** Latency stayed well below the 200ms target
-- **No latency degradation** observed during scaling events
-- **Post-test recovery:** Latency metrics returned to baseline quickly
-- The percentage increases (↑ 43-45%) are from very low baseline values, actual latency still excellent
+
+**Pub/Sub Topic Metrics:**
+- **logs-apigee:** 34.9M operations (sum), average 332k ops, peak 419k ops, sustained high throughput throughout the test window.
+- **logs-cpi:** 1.4M operations (sum), average 14k ops, peak 18k ops, consistent delivery during test.
+These metrics confirm both logs-apigee and logs-cpi topics handled high and steady message rates, as shown in the attached dashboard screenshot.
 
 **Latency Pattern by Time:**
 ```
