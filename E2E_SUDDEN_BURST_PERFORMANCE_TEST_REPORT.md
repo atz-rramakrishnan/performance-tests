@@ -98,14 +98,23 @@ Destinations: GCP Logging + Datadog
 **Target:** System capacity validation under sudden burst load  
 **Observed:**
 
-**Overall System Throughput:**
-- **Peak Throughput:** 3.41k reqs/s (sudden burst period)
-- **Sustained Throughput:** 5-6k reqs/s during active test window
+**API Gateway Throughput (GCP Metrics):**
+- **Average TPS:** 987.275 transactions/second
+- **Peak TPS:** 1.523k TPS (at 11:34 AM)
+- **Total Traffic:** 2,073,277 requests
+- **Total Traffic Success:** 2,072,407 requests
+- **Total Traffic Error:** 870 requests
+- **Success Rate:** 99.96%
+
+**GCR logs-publisher Throughput:**
+- **Peak Processing Throughput:** 3.41k reqs/s (sudden burst period)
+- **Sustained Processing Throughput:** 5-6k reqs/s during active test window
 - **Baseline Throughput:** ~400 reqs/s (pre-test)
 - **Throughput Increase:** 855% spike from baseline
 
 **Request Volume:**
-- **Total API Requests (Gateway):** 4.16M requests across all proxies
+- **Total API Requests (Gateway):** 4.16M requests across all proxies (Datadog metrics)
+- **Total API Traffic (GCP):** 2.07M requests (GCP native metrics)
 - **Total GCR Log Processing Requests:** 8.16M log messages processed
 - **Total GCR Responses:** 8.18M (204 status codes - 100% success)
 - **Average GCR Processing Rate:** 204k log messages per minute
