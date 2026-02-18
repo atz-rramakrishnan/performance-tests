@@ -17,7 +17,8 @@ The sudden burst performance test validated the logging pipeline's ability to ha
 ### Key Highlights
 - **100% Service Availability** maintained throughout the sudden burst test
 - **Rapid auto-scaling** from baseline to 279 container instances within seconds
-- **8.18M log responses** (204 status) with 100% success rate
+- **4.16M API requests** processed at gateway level across in-scope proxies
+- **8.18M log processing operations** at GCR level with 100% success rate (204 status)
 - **Peak throughput** of 3.41k req/s sustained during burst period
 - **CPU utilization** peaked at 72.56% during initial burst, then stabilized
 - **Latency performance** remained within acceptable ranges (p95 ~150-250ms during burst)
@@ -104,10 +105,11 @@ Destinations: GCP Logging + Datadog
 - **Throughput Increase:** 855% spike from baseline
 
 **Request Volume:**
-- **Total GCR Requests:** 8.16M requests processed
+- **Total API Requests (Gateway):** 4.16M requests across all proxies
+- **Total GCR Log Processing Requests:** 8.16M log messages processed
 - **Total GCR Responses:** 8.18M (204 status codes - 100% success)
-- **Average Request Rate:** 204k reqs per minute
-- **Peak Request Rate:** 355.75k reqs at 11:25 AM
+- **Average GCR Processing Rate:** 204k log messages per minute
+- **Peak GCR Processing Rate:** 355.75k log messages at 11:25 AM
 
 **Pub/Sub Topic Metrics:**
 - **logs-apigee:** 9.51M operations total, peak 416k ops, average 237.8k ops
@@ -123,8 +125,8 @@ Destinations: GCP Logging + Datadog
 **Observed:**
 
 **GCR Response Codes:**
-- **Status 204 (Success):** 8.18M requests (100%)
-- **Status 500/503/504:** 0 requests (0%)
+- **Status 204 (Success):** 8.18M log processing operations (100%)
+- **Status 500/503/504:** 0 operations (0%)
 - **Overall Error Rate:** 0%
 
 **GCR Errors:**
@@ -343,10 +345,10 @@ Destinations: GCP Logging + Datadog
 ### Request Processing
 
 **GCR Requests:**
-- **Total Requests:** 8.16M
-- **Peak Request Rate:** 355.75k reqs (at 11:25 AM)
-- **Average:** 204k reqs
-- **Sustained Rate:** ~300k reqs during burst period
+- **Total Log Processing Operations:** 8.16M
+- **Peak Processing Rate:** 355.75k operations (at 11:25 AM)
+- **Average:** 204k operations
+- **Sustained Rate:** ~300k operations during burst period
 
 **GCR Response Codes:**
 - **204 (Success):** 8.18M responses (100%)
@@ -387,7 +389,8 @@ The sudden burst performance test successfully validated the logging pipeline's 
 
 ✅ **Immediate auto-scaling** response (279 containers in <1 minute)  
 ✅ **100% availability** maintained throughout burst period  
-✅ **Zero error rate** with 8.18M successful responses  
+✅ **4.16M API requests** processed successfully at gateway level  
+✅ **8.18M log operations** processed with zero error rate at GCR level  
 ✅ **Effective resource management** with CPU peaking at 72.56%  
 ✅ **Rapid stabilization** of latency after initial spike  
 ✅ **Pub/Sub resilience** with minimal backlog accumulation  
