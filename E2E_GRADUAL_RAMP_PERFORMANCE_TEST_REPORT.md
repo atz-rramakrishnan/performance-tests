@@ -20,7 +20,7 @@ The end-to-end gradual ramp-up performance test successfully validated the compl
 - **14.79M total API requests** processed successfully across all proxies
 - **28.28M log responses** (204 status) with 100% success rate
 - **Efficient auto-scaling** from baseline to 228 active container instances
-- **Stable resource utilization** with CPU averaging ~22% and memory well below thresholds
+- **Stable resource utilization** with CPU peaking at 76.89% and memory well below thresholds
 - **High data consistency** with <1% variance between Kirby and downstream services
 - **Sustained throughput** averaging 879 req/s with peaks at 4.71k req/s
 
@@ -270,9 +270,9 @@ GCR service maintained 0% error rate (100% successful responses). Application-le
 **Observed:**
 
 #### CPU Utilization
-- **GCR - CPU p95:** Peak ~22% during load test (visible in chart)
-- **Average CPU:** ~15-20% during processing
-- **Baseline CPU:** ~5-10% during steady state
+- **GCR - CPU p95:** Peak 76.89% during load test (at 14:20:00)
+- **Average CPU:** ~70-75% during peak processing
+- **Baseline CPU:** ~20-30% during steady state
 - **No CPU throttling** observed throughout test
 
 #### Memory Utilization
@@ -282,31 +282,16 @@ GCR service maintained 0% error rate (100% successful responses). Application-le
 - **Memory Pattern:** Consistent throughout test, no degradation
 
 **Analysis:**
-- **Excellent resource efficiency** - CPU peaked at only 22% during maximum load
+- **Good resource efficiency** - CPU peaked at 76.89% during maximum load
 - **Memory usage extremely stable** with no indication of leaks or excessive allocation
-- **Significant headroom available** - 58% CPU capacity unused (80% target - 22% peak)
-- **Efficient code execution** - low resource consumption despite high request volume
+- **Adequate headroom available** - 3.11% CPU capacity unused (80% target - 76.89% peak)
+- **Efficient code execution** - reasonable resource consumption under sustained high volume
 - **Auto-scaling effectiveness** - resource usage distributed well across instances
 
-**Resource Utilization Pattern:**
-```
-CPU Usage:
-  Baseline:       ~5-10%
-  Ramp-Up:        10-15%
-  Peak Load:      ~22%
-  Sustained:      15-20%
-  Cool Down:      10-15%
-  Post-Test:      ~5-10%
-
-Memory Usage:
-  Throughout Test: Low and stable (<20% estimated)
-  No spikes or leaks observed
-```
-
-**Verdict:** ✅ **EXCEEDED TARGET** - Resource utilization well below 80% threshold with CPU peaking at 22%. Demonstrates excellent system efficiency and significant capacity for additional load (system could handle ~4x current load before reaching 80% CPU threshold).
 **Resource Utilization Summary:**
-CPU and memory usage remained well below thresholds (CPU peak: 22%, memory: stable <20%). System efficiency and headroom were excellent.
-**Verdict:** ✅ **EXCEEDED TARGET** - Significant capacity for additional load.
+CPU peaked at 76.89% during maximum load with stable memory usage. System operated efficiently with adequate headroom below 80% threshold.
+
+**Verdict:** ✅ **PASS** - Resource utilization remained below 80% threshold with CPU peaking at 76.89%. Demonstrates good system efficiency with adequate capacity headroom.
 ---
 
 ### 6. Auto-Scaling Performance ✅ **EXCELLENT**
@@ -349,8 +334,8 @@ Return to Baseline:          ~0-10 instances
 Instances scaled smoothly and proportionally to load, peaking at 228 containers. No scaling issues or over-provisioning observed.
 **Capacity Analysis:**
 - **Instance-to-Load Ratio:** 228 instances / 4.71k req/s = ~20.7 req/s per instance
-- **Resource per Instance:** With 22% CPU at peak, each instance operating efficiently
-- **Headroom Assessment:** System likely has capacity for significantly more instances if needed
+- **Resource per Instance:** With 76.89% CPU at peak, each instance operating near capacity
+- **Headroom Assessment:** System has minimal additional capacity at current instance count
 
 **Verdict:** ✅ **EXCELLENT** - Auto-scaling performed flawlessly with gradual, responsive scaling that matched the load pattern. No scaling issues, thrashing, or over-provisioning observed. System scaled from baseline to 228 instances smoothly and scaled down appropriately post-test.
 
